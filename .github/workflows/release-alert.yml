@@ -1,0 +1,27 @@
+name: Release Alert
+
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  send_message:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          repository: username/repo-name
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14.x'
+      - name: Install dependencies
+        run: npm install discord.js
+      - name: Send message
+        run: |
+          node send_message.js ${{ github.event.release.tag_name }}
+        env:
+          DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
+          DISCORD_CHANNEL_ID: <your_channel_id>
