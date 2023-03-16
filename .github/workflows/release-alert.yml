@@ -1,26 +1,20 @@
-name: Release Alert
-
+name: Check for new releases
 on:
-  release:
-    types: [published]
-
+  schedule:
+    - cron: '0 */6 * * *' # Run every 6 hours
 jobs:
-  send_message:
+  check-releases:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-        with:
-          repository: sveltejs/kit
-      - name: Set up Node.js
+      - uses: actions/checkout@v2
+      - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '14.x'
+          node-version: '18.x'
       - name: Install dependencies
-        run: npm install discord.js
-      - name: Send message
-        run: |
-          node send_message.js ${{ github.event.release.tag_name }}
+        run: npm install
+      - name: Check for new releases
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
-          DISCORD_CHANNEL_ID: <your_channel_id>
+        run: node index.js
